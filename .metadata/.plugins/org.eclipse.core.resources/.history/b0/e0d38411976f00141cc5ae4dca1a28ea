@@ -1,0 +1,227 @@
+package com.db.comps;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.lang.reflect.InvocationTargetException;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
+
+import com.db.database.Database;
+import com.db.tools.DateTimeCalendar;
+
+
+public class TestFrame extends JFrame {
+	private static final long serialVersionUID = 1L;
+	
+	private JPanel contentPane;
+	private CardLayout cards;
+	private JPanel change_panel;
+	private ImageButton ib1, ib2, ib3, ib4;
+	private JPanel data_panel;
+	private JTable table;
+	private JScrollPane scrollPane;
+	
+	private Database database;
+	
+	private DateTimeCalendar calendar;
+
+	/**
+	 * Create the frame.
+	 * @throws InvocationTargetException 
+	 * @throws IllegalArgumentException 
+	 * @throws IllegalAccessException 
+	 * @throws SecurityException 
+	 * @throws NoSuchMethodException 
+	 */
+	public TestFrame(Database database, DateTimeCalendar calendar) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		this.calendar = calendar;
+		this.database = database;
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 942, 541);
+		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		
+		cards = new CardLayout(0, 0);
+		
+		change_panel = new JPanel();
+		change_panel.setBackground(Color.WHITE);
+		
+		JPanel switch_panel = new JPanel();
+		switch_panel.setBackground(Color.WHITE);
+		
+		data_panel = new JPanel();
+		
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(change_panel, GroupLayout.PREFERRED_SIZE, 381, GroupLayout.PREFERRED_SIZE)
+						.addComponent(switch_panel, GroupLayout.PREFERRED_SIZE, 381, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(data_panel, GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addComponent(switch_panel, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(change_panel, GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE))
+				.addComponent(data_panel, GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
+		);
+		change_panel.setLayout(cards);
+		
+		/* Guest panel *****************************************************/
+		JPanel guest_panel = new JPanel();
+		guest_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		guest_panel.setBackground(new Color(143, 188, 143));
+		change_panel.add(guest_panel, "guest_panel");
+		TextButton updateGuests = new TextButton("updateGuests", null, null, this, "Update Guests");
+		updateGuests.setPreferredSize(new Dimension(150,50));
+		guest_panel.add(updateGuests);
+		TextButton removeGuest = new TextButton("removeGuest", null, null, this, "Remove Guest");
+		removeGuest.setPreferredSize(new Dimension(150,50));
+		guest_panel.add(removeGuest);
+		
+		
+		/* Food panel *****************************************************/
+		JPanel food_panel = new JPanel();
+		food_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		food_panel.setBackground(new Color(219, 112, 147));
+		change_panel.add(food_panel, "food_panel");
+		
+		/* Ride Panel *****************************************************/
+		JPanel ride_panel = new JPanel();
+		ride_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		ride_panel.setBackground(new Color(100, 149, 237));
+		change_panel.add(ride_panel, "ride_panel");
+		TextButton addNewRide = new TextButton("addNewRide", null, null, this, "Add new ride");
+		addNewRide.setPreferredSize(new Dimension(150,50));
+		ride_panel.add(addNewRide);
+		TextButton updateRides = new TextButton("updateRides", null, null, this, "Update rides");
+		updateRides.setPreferredSize(new Dimension(150,50));
+		ride_panel.add(updateRides);
+		
+		/* Info panel *****************************************************/
+		JPanel info_panel = new JPanel();
+		info_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		info_panel.setBackground(new Color(255, 140, 0));
+		change_panel.add(info_panel, "info_panel");
+		TextButton updateInfo = new TextButton("updateInfo", null, null, this, "Update info");
+		updateInfo.setPreferredSize(new Dimension(150,50));
+		info_panel.add(updateInfo);
+		
+		switch_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 3));
+		
+		ib1 = new ImageButton("menuPressed", null, null, this, "guests.png", 64,64,"", false);
+		ib2 = new ImageButton("menuPressed", null, null, this, "rides.png", 64,64,"", false);
+		ib3 = new ImageButton("menuPressed", null, null, this, "food.png", 64,64,"", false);
+		ib4 = new ImageButton("menuPressed", null, null, this, "info.png", 64,64,"", false);
+		
+		switch_panel.add(ib1);
+		switch_panel.add(ib2);
+		switch_panel.add(ib3);
+		switch_panel.add(ib4);
+		data_panel.setLayout(new BorderLayout(0, 0));
+		
+		scrollPane = new JScrollPane();
+		data_panel.add(scrollPane);
+		
+		table = database.getTableFromDatabase("guests");
+		scrollPane.setViewportView(table);
+		
+		contentPane.setLayout(gl_contentPane);
+	}
+	
+	public void updateInfo(Component comp){
+		table = database.getTableFromDatabase("info");
+		scrollPane.setViewportView(table);
+		scrollPane.repaint();
+		table.repaint();
+	}
+	
+	public void addNewRide(Component comp){
+		System.out.println("NEW RIDE");
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					NewRideWindow frame = new NewRideWindow(database, calendar);
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public void updateRides(Component comp){
+		table = database.getTableFromDatabase("rides");
+		scrollPane.setViewportView(table);
+		scrollPane.repaint();
+		table.repaint();
+	}
+	
+	public void updateGuests(Component comp){
+		System.out.println("update");
+		table = database.getTableFromDatabase("guests");
+		scrollPane.setViewportView(table);
+		scrollPane.repaint();
+		table.repaint();
+	}
+	
+	public void removeGuest(Component comp){
+		System.out.println(table.getSelectedRow());
+		int i = Integer.parseInt((String)table.getValueAt(table.getSelectedRow(), 0));
+		database.removeIDFromTable(i, "guests");
+	}
+	
+	public void menuPressed(Component comp){
+		if(comp.equals(ib1)){
+			ib1.setEnabled(false);
+			table = database.getTableFromDatabase("guests");
+			scrollPane.setViewportView(table);
+			scrollPane.repaint();
+			table.repaint();
+			System.out.println("1");
+			cards.show(change_panel, "guest_panel");
+			
+		}else if(comp.equals(ib2)){
+			table = database.getTableFromDatabase("rides");
+			scrollPane.setViewportView(table);
+			scrollPane.repaint();
+			table.repaint();
+			System.out.println("2");
+			cards.show(change_panel, "ride_panel");
+		}else if(comp.equals(ib3)){
+			table = database.getTableFromDatabase("food");
+			scrollPane.setViewportView(table);
+			scrollPane.repaint();
+			table.repaint();
+			System.out.println("3");
+			cards.show(change_panel, "food_panel");
+		}else{
+			table = database.getTableFromDatabase("info");
+			scrollPane.setViewportView(table);
+			scrollPane.repaint();
+			table.repaint();
+			System.out.println("3");
+			cards.show(change_panel, "info_panel");
+		}
+		ib1.setEnabled(true);
+	}
+}

@@ -1,0 +1,81 @@
+package com.db.dbmanager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.example.dbthemeparkapp.R;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Color;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+public class RideTableCreator extends DB{
+	
+	private JSONObject json_data;
+	
+	public TextView createTextView(String value, boolean fill) throws JSONException{
+		TextView b1 = new TextView(context);
+		b1.setPadding(10, 0, 0, 0);
+		b1.setTextSize(24);
+		b1.setTextColor(Color.parseColor("#585858"));
+		String stime1 = json_data.getString(value);
+		b1.setLayoutParams(new TableRow.LayoutParams(
+				LayoutParams.MATCH_PARENT,
+				LayoutParams.MATCH_PARENT, 1.0f));
+		b1.setText(stime1);
+		if(fill){
+			b1.setBackgroundColor(Color.parseColor("#C6CDD1"));
+		}
+		return b1;
+	}
+
+	public RideTableCreator(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void updateUI(String result) {
+		JSONArray jArray;
+
+		try {
+
+			jArray = new JSONArray(result);
+			TableLayout tv = (TableLayout) ((Activity)context).findViewById(R.id.table3);
+			boolean fillColor = false;
+
+			for (int i = 0; i < jArray.length(); i++) {
+
+				fillColor = !fillColor;
+
+				TableRow tr = new TableRow(context);
+
+				TableLayout.LayoutParams p = new TableLayout.LayoutParams(
+						LayoutParams.WRAP_CONTENT,
+						LayoutParams.WRAP_CONTENT);
+
+				tr.setLayoutParams(p);
+
+				json_data = jArray.getJSONObject(i);
+
+				tr.addView(createTextView("id", fillColor));
+				tr.addView(createTextView("name", fillColor));
+				tr.addView(createTextView("build_date", fillColor));
+				tr.addView(createTextView("excitement", fillColor));
+				tr.addView(createTextView("price", fillColor));
+
+				tv.addView(tr);
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+}

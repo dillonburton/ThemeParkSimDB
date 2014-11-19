@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.db.fragments.FragmentTest2"/>
+<fullyQualifiedTypeName name="android.R"/>
+<fullyQualifiedTypeName name="android.R.id"/>
+<fullyQualifiedTypeName name="android.R.layout"/>
+<fullyQualifiedTypeName name="com.example.dbthemeparkapp.R"/>
+<fullyQualifiedTypeName name="com.db.dbmanager.GuestTableCreator"/>
+<fullyQualifiedTypeName name="android.support.v4.app.Fragment"/>
+<fullyQualifiedTypeName name="android.view.Gravity"/>
+<fullyQualifiedTypeName name="com.db.dbmanager.GuestTableCreator2"/>
+<fullyQualifiedTypeName name="android.widget.LinearLayout"/>
+<fullyQualifiedTypeName name="android.view.ViewGroup.LayoutParams"/>
+<fullyQualifiedTypeName name="com.db.dbmanager.RideTableCreator"/>
+<fullyQualifiedTypeName name="com.db.fragments.FragmentTest3"/>
+<fullyQualifiedTypeName name="com.db.dbmanager.InfoTableCreator"/>
+<fullyQualifiedTypeName name="com.db.dbmanager.TableCreator"/>
+<fullyQualifiedTypeName name="android.content.Context"/>
+<fullyQualifiedTypeName name="com.example.dbthemeparkapp.ItemListActivity"/>
+<fullyQualifiedTypeName name="com.example.dbthemeparkapp.R.id"/>
+<fullyQualifiedTypeName name="android.widget.TableRow"/>
+<fullyQualifiedTypeName name="java.util.List"/>
+<fullyQualifiedTypeName name="javax.swing.table.DefaultTableModel"/>
+</qualifiedTypeNameHistroy>

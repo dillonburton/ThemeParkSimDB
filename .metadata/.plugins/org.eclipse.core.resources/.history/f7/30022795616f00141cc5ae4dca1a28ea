@@ -1,0 +1,35 @@
+package com.db.fragments;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import com.db.dbmanager.GuestTableCreator2;
+import com.example.dbthemeparkapp.R;
+
+public class FragmentTest2 extends Fragment {
+	
+	private Context context;
+
+    public FragmentTest2(Context context) {
+    	this.context = context;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_test_2, container, false);
+        
+        GuestTableCreator2 dbh = new GuestTableCreator2(context);
+		dbh.execute("test.php");
+		
+        return rootView;
+    }
+}

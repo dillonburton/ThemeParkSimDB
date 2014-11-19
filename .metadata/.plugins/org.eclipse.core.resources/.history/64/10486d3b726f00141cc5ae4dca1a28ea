@@ -1,0 +1,7 @@
+package com.db.dbmanager;
+
+public class StoredTable {
+	
+	public static TableView guestTable;
+
+}
