@@ -1,0 +1,181 @@
+package com.db.tools;
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.HashMap;
+
+import com.db.comps.TestFrame;
+
+public class DateTimeCalendar extends Thread{
+	
+	
+	public static int lengthOfMinute = 30;
+	
+	// Extra leave chance for guests as the time gets later
+	public static float extraLeaveChance = 0;
+	
+	public static boolean parkClosed = true;
+
+	public HashMap<Integer, String> weekNames;
+	public HashMap<Integer, String> monthNames;
+	boolean dayChange = false;
+	private int delay = 5;
+	private TestFrame testFrame;
+
+	@Override
+	public void run(){
+		while(true){
+			
+			try {
+				Thread.sleep(lengthOfMinute);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			calcTime();
+
+			dayChange = false;
+			String d = monthNames.get(monthCounter.current);
+			d += " " + dayOfMonthCounter.current;
+			d += ", " + year;
+			d += " - " + hourCounter.current;
+			d += ":" + minuteCounter.current;
+			d += ", " + weekNames.get(dayOfWeekCounter.current);
+			
+			if(!parkClosed){
+				
+				if(hourCounter.current >= 22){
+					System.out.println("THE PARK IS NOW CLOSING DOWN...................................................");
+					parkClosed = true;
+					extraLeaveChance = 100;
+				}
+				
+				else if(hourCounter.current >= 21 && minuteCounter.current >= 45){
+					extraLeaveChance = 95;
+				}
+				
+				else if(hourCounter.current >= 21 && minuteCounter.current >= 0){
+					extraLeaveChance = 30;
+				}
+			}
+			
+			else{
+				if(hourCounter.current >= 8 && hourCounter.current < 22){
+					parkClosed = false;
+					System.out.println("THE PARK IS OPENING BACK UP!!! ..................................................");
+					extraLeaveChance = 0;
+				}
+			}
+			//System.out.println(d);
+		}
+	}
+
+	private NumCounter monthCounter, dayOfMonthCounter, 
+	dayOfWeekCounter, hourCounter, minuteCounter;
+
+	private int[] monthDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	int year;
+
+	public DateTimeCalendar(int year, int month, int dayOfMonth, int hour, int minute, TestFrame testFrame){
+		
+		this.testFrame = testFrame;
+		System.out.println(testFrame);
+
+		weekNames = new HashMap<Integer, String>();
+		weekNames.put(0, "Sunday");
+		weekNames.put(1, "Monday");
+		weekNames.put(2, "Tuesday");
+		weekNames.put(3, "Wednesday");
+		weekNames.put(4, "Thursday");
+		weekNames.put(5, "Friday");
+		weekNames.put(6, "Saturday");
+
+		monthNames = new HashMap<Integer, String>();
+		monthNames.put(0, "January");
+		monthNames.put(1, "February");
+		monthNames.put(2, "March");
+		monthNames.put(3, "April");
+		monthNames.put(4, "May");
+		monthNames.put(5, "June");
+		monthNames.put(6, "July");
+		monthNames.put(7, "August");
+		monthNames.put(8, "September");
+		monthNames.put(9, "October");
+		monthNames.put(10, "November");
+		monthNames.put(11, "December");
+
+		this.year = year;
+
+		monthCounter = new NumCounter(11, 0, month);
+		dayOfMonthCounter = new NumCounter(monthDays[month], 1, dayOfMonth);
+		hourCounter = new NumCounter(23, 0, hour);
+		minuteCounter = new NumCounter(59, 0, minute);
+
+		/* Get day of the week */
+		Calendar c = Calendar.getInstance();
+		Date yourDate = new Date(year, month, dayOfMonth);
+		c.setTime(yourDate);
+		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+		System.out.println(dayOfWeek);
+
+		dayOfWeekCounter = new NumCounter(6, 0, dayOfWeek);
+	}
+
+	public boolean getFebLeap(int year){
+		if((year - 1752)%4 == 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public DateTime getDateAndTime(){
+		return new DateTime(year, monthCounter.current, dayOfMonthCounter.current, 
+				hourCounter.current, minuteCounter.current);
+	}
+
+
+	public void calcTime(){
+		if(minuteCounter.increase()){
+
+			if(hourCounter.increase()){
+				dayChange = true;
+				dayOfWeekCounter.increase();
+				if(dayOfMonthCounter.increase()){
+
+					if(monthCounter.increase()){
+						dayOfMonthCounter = new 
+								NumCounter(monthDays[0], 1, 1);
+						year++;
+					}else{
+						dayOfMonthCounter = new NumCounter(
+								monthDays[dayOfMonthCounter.
+								          current + 1], 1, 1);
+					}
+				}
+			}
+		}
+	}
+
+	protected class NumCounter{
+
+		private int max, min, current;
+
+		public NumCounter(int max, int min, int start){
+			this.max = max;
+			this.min = min;
+			this.current = start;
+		}
+
+		public boolean increase(){
+			int futureCount = current + 1;
+			if(futureCount > max){
+				current = min;
+				return true;
+			}
+			current = futureCount;
+			return false;
+		}
+
+	}
+
+}

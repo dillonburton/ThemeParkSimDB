@@ -1,0 +1,23 @@
+package com.db.runners;
+
+public abstract class Runner implements Runnable{
+	
+	private boolean running;
+	
+	public abstract void act();
+	
+	public Runner(){
+		running = true;
+	}
+	
+	public void stop(){
+		running = false;
+	}
+
+	@Override
+	public void run() {
+		while(running){
+			act();
+		}
+	}
+}

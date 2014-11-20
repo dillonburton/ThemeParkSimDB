@@ -10,8 +10,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
 import com.db.guest.Guest;
 import com.db.guest.Ride;
 import com.db.tools.DateTime;
@@ -27,67 +29,70 @@ public class Database {
 	// Used for executing MySQL queries
 	private Statement statement;
 
+	// Used for getting meta information from results
 	private DatabaseMetaData meta;
+	
+	private int currentID = 0;
 
-	private DateTimeCalendar calendar;
-
-	public Database(boolean reset, DateTimeCalendar calendar) throws SQLException, IOException, ClassNotFoundException{
-
-		this.calendar = calendar;
+	public Database(){
 		startDatabase();
-
-		/* If reset flag is true, re-make the names tables */
-		if(reset){
-			Info.maleListAmount = addNamesToDatabase("males.txt", "male_names");
-			Info.femaleListAmount = addNamesToDatabase("females.txt", "female_names");
-		}else{
-			Info.maleListAmount = 1200;
-			Info.femaleListAmount = 1200;
-		}
 	}
 
 	public void addRideToDatabase(Ride ride){
 		try {
 			/* Add a ride with determined name */
-			statement.executeUpdate("insert into rides (id, name, build_date, excitement, price) values (NULL, '" + 
-					ride.getName() + "', '1991-2-2', 12, " + ride.getPrice() + ");");
+			statement.executeUpdate("insert into rides (id, name, build_date, "
+					+ "excitement, price) values (NULL, '" + ride.getName() 
+					+ "', '1991-2-2', 12, " + ride.getPrice() + ");");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void addInfoToDatabase(String text){
-		try {
-			statement.executeUpdate("insert into info (id, text, date) values (NULL, '" + text + "', '1991-2-2');");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void addInfoToDatabase(String text, DateTimeCalendar calendar){
+//		try {
+//			statement.executeUpdate("insert into info (id, text, date) "
+//					+ "values (NULL, '" + text + "', '" + calendar.getDateAndTime().getDateTime() + "');");
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 	}
 
+	/**
+	 * clearTables empties all the tables in the database
+	 */
 	public void clearTables(){
 		try {
 			statement.executeUpdate("truncate guests;");
 			statement.executeUpdate("truncate rides;");
 			statement.executeUpdate("truncate info;");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public Guest generateRandomGuest(){
+	/**
+	 * generateRandomGuest creates a random guest using names from the
+	 * database and creates a new guest
+	 * @param calendar is for retrieving the date that the guest was created
+	 * @return the newly created guest
+	 */
+	public Guest generateRandomGuest(DateTimeCalendar calendar){
 
 		// Select either a male or female
 		boolean isMale = Randomizer.randomBoolean();
 
 		String tableName = "";
 		int maxAmount = 0;
+		char sex;
 
 		/* Choose which maximum number to access (Male or female) */
 		if(isMale){
+			sex = 'M';
 			tableName = "male_names";
 			maxAmount = Info.maleListAmount;
 		}else{
+			sex = 'F';
 			tableName = "female_names";
 			maxAmount = Info.femaleListAmount;
 		}
@@ -115,8 +120,9 @@ public class Database {
 		DateTime arrivalDate = calendar.getDateAndTime();
 
 		/* Create the guest, and add alert and guest to database */
-		Guest guest = new Guest(0, name, 'M', arrivalDate, 5, money);
-		addInfoToDatabase(guest.getName() + " has entered the park.");
+		Guest guest = new Guest(currentID, name, sex, arrivalDate, 1, money);
+		currentID++;
+		
 		try {
 			String s = String.format("insert into guests (id, name, sex, arrival_date) values (NULL, '%s', '%c', '%s');", guest.getName(), guest.getSex(), guest.getArrivalDate());
 			statement.executeUpdate(s);
@@ -127,18 +133,28 @@ public class Database {
 		return guest;
 	}
 
-	private void startDatabase() throws ClassNotFoundException, SQLException{
-		Class.forName("com.mysql.jdbc.Driver");
+	/**
+	 * Starts the database
+	 */
+	private void startDatabase(){
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
 
-		/* Start the connection */
-		connection = DriverManager.getConnection(
-				"jdbc:mysql://sql4.freesqldatabase.com/sql458061", "sql458061", "sE3%aR5*");
+			/* Start the connection */
+			connection = DriverManager.getConnection(
+					"jdbc:mysql://sql4.freesqldatabase.com/sql458061", "sql458061", "sE3%aR5*");
 
-		// Create a statement
-		statement = connection.createStatement();
+			// Create a statement
+			statement = connection.createStatement();
 
-		// Create meta data
-		meta = connection.getMetaData();
+			// Create meta data
+			meta = connection.getMetaData();
+
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void removeIDFromTable(int id, String tableName){
@@ -148,113 +164,126 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public JTable getTableFromDatabase(String tableName){
 
 		JTable table = null;
-		boolean attempt = true;
 		int attempts = 2;
 		int currentAttempts = 0;
-		
-			try {
 
-				statement = connection.createStatement();
-				
-				/* Select everything from the table and get the number of columns */
-				ResultSet result = statement.executeQuery("SELECT * FROM " + tableName);
-				ResultSetMetaData md = result.getMetaData();
-				int numCols = md.getColumnCount();
+		try {
 
-				// Column names
-				String[] headers = new String[numCols];
+			statement = connection.createStatement();
 
-				/* Get column names from meta data */
-				for(int i = 0; i < numCols; i++){
-					headers[i] = md.getColumnName(i + 1);
-				}
+			/* Select everything from the table and get the number of columns */
+			ResultSet result = statement.executeQuery("SELECT * FROM " + tableName);
+			ResultSetMetaData md = result.getMetaData();
+			int numCols = md.getColumnCount();
 
-				// Create the default table model
-				DefaultTableModel dtm = new DefaultTableModel(0, 0);
+			// Column names
+			String[] headers = new String[numCols];
 
-				/* Add columns to model and create the table */
-				dtm.setColumnIdentifiers(headers);
-				table = new JTable(dtm);
-
-				/* Add all rows to the table */
-				while(!result.isClosed() && result.next()){
-					System.out.println("here");
-					Object[] r = new Object[numCols];
-					for(int j = 0; j < r.length; j++){
-						r[j] = result.getString(j + 1);
-					}
-					dtm.addRow(r);
-					
-				}
-
-			} catch (SQLException e) {
-				e.printStackTrace();
-				currentAttempts++;
-				System.out.println("Could not load data, trying again");
-				if(currentAttempts >= attempts){
-					System.out.println("Could not load tables. Try again.");
-					return new JTable();
-				}
-				return getTableFromDatabase(tableName);
+			/* Get column names from meta data */
+			for(int i = 0; i < numCols; i++){
+				headers[i] = md.getColumnName(i + 1);
 			}
-		
+
+			// Create the default table model
+			DefaultTableModel dtm = new DefaultTableModel(0, 0);
+
+			/* Add columns to model and create the table */
+			dtm.setColumnIdentifiers(headers);
+			table = new JTable(dtm);
+
+			/* Add all rows to the table */
+			while(!result.isClosed() && result.next()){
+				Object[] r = new Object[numCols];
+				for(int j = 0; j < r.length; j++){
+					r[j] = result.getString(j + 1);
+				}
+				dtm.addRow(r);
+
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			currentAttempts++;
+			System.out.println("Could not load data, trying again");
+			if(currentAttempts >= attempts){
+				System.out.println("Could not load tables. Try again.");
+				return new JTable();
+			}
+			return getTableFromDatabase(tableName);
+		}
+
 		return table;
 	}
 
-	private int addNamesToDatabase(String fileName, String tableName)
+	/**
+	 * addNamesToDatabase re adds all of the names to the database for random
+	 * generation of guests (This method takes quite a long time to run)
+	 * @param reAddNames is if the method should redo all the names
+	 * (For testing purposes only)
+	 */
+	public void addNamesToDatabase(boolean reAddNames)
 			throws SQLException, IOException{
+		
+		if(reAddNames){
 
-		System.out.println("Adding names to database-------------------");
+			String[] txtNames = {"males.txt", "females.txt"};
+			String[] tableNames = {"male_names", "female_names"};
 
-		// Used throughout function for results
-		ResultSet result;
+			for(int index = 0; index < 1; index++){
+				System.out.println("Adding names to database-------------------");
 
-		result = meta.getTables(null, null, tableName, null);
+				// Used throughout function for results
+				ResultSet result;
 
-		/* See if table already exists */
-		if(result.next()){
-			System.out.println("Table already exists. Removing "+ tableName + "...");
-			statement.executeUpdate("DROP TABLE " + tableName + ";");
+				result = meta.getTables(null, null, tableNames[index], null);
+
+				/* See if table already exists */
+				if(result.next()){
+					System.out.println("Table already exists. Removing "+ tableNames[index] + "...");
+					statement.executeUpdate("DROP TABLE " + tableNames[index] + ";");
+				}
+
+				/* Create the table */
+				System.out.println("Creating table " + tableNames[index] + "...");
+				statement.executeUpdate("create table " + tableNames[index] + 
+						" (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20));");
+
+				/* Define file line and buffer to read in file */
+				String line;
+				BufferedReader br = new BufferedReader(new FileReader(txtNames[index]));
+
+				int count = 0;
+
+				/* Read in and parse names; store into database */
+				while ((line = br.readLine()) != null) {
+					count++;
+					line = line.replaceAll("\\d+.*", "").replace(" ", "");
+					System.out.println("Count = " + count);
+					statement.execute("INSERT INTO " + tableNames[index] + 
+							" (id, name) VALUES (NULL, '" + line + "');");
+				} br.close();
+
+				// Get the id of the last row
+				statement.executeQuery("SELECT MAX(id) FROM " + tableNames[index] + ";");
+
+				result = statement.getResultSet();
+				int listAmount = 0;
+
+				/* Find the id of the last row and store the value into list amount */
+				while(result.next()){
+					listAmount = result.getInt("MAX(id)");
+					System.out.println(listAmount + " entries.");
+				}
+
+				System.out.println("Done creating table " + tableNames[index] + ".\n");
+			}
+		}else{
+			Info.femaleListAmount = 1000;
+			Info.maleListAmount = 1000;
 		}
-
-		/* Create the table */
-		System.out.println("Creating table " + tableName + "...");
-		statement.executeUpdate("create table " + tableName + 
-				" (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR(20));");
-
-		/* Define file line and buffer to read in file */
-		String line;
-		BufferedReader br = new BufferedReader(new FileReader(fileName));
-
-		int count = 0;
-
-		/* Read in and parse names; store into database */
-		while ((line = br.readLine()) != null) {
-			count++;
-			line = line.replaceAll("\\d+.*", "").replace(" ", "");
-			System.out.println("Count = " + count);
-			statement.execute("INSERT INTO " + tableName + 
-					" (id, name) VALUES (NULL, '" + line + "');");
-		} br.close();
-
-		// Get the id of the last row
-		statement.executeQuery("SELECT MAX(id) FROM " + tableName + ";");
-
-		result = statement.getResultSet();
-		int listAmount = 0;
-
-		/* Find the id of the last row and store the value into list amount */
-		while(result.next()){
-			listAmount = result.getInt("MAX(id)");
-			System.out.println(listAmount + " entries.");
-		}
-
-		System.out.println("Done creating table " + tableName + ".\n");
-
-		return listAmount;
 	}
 }

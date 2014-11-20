@@ -1,0 +1,51 @@
+package com.db.runners;
+
+import com.db.database.Database;
+import com.db.guest.Guest;
+import com.db.tools.DateTimeCalendar;
+import com.db.tools.Randomizer;
+
+public class GuestRunner extends Runner{
+
+	private Guest guest;
+	private Database database;
+
+	public GuestRunner(Guest guest){
+		super();
+		this.guest = guest;
+		database = new Database();
+	}
+
+	@Override
+	public void act() {
+
+		/* Sleep for a random time */
+		try {Thread.sleep(Randomizer.randomInt(
+				DateTimeCalendar.lengthOfMinute*5, 
+				DateTimeCalendar.lengthOfMinute*30));} 
+		catch (InterruptedException e) {e.printStackTrace();}
+
+		if(guest.shouldLeave()){
+			super.stop();
+			database.removeIDFromTable(guest.getId(), "guests");
+		}
+
+		else{
+			
+			boolean couldAfford = guest.attemptPurchase(
+					Randomizer.randomFloat(3.0f, 20.0f, 2));
+
+			guest.incLeaveChance(Randomizer.randomFloat(1, 4, 2));
+
+			if(couldAfford){
+				database.addInfoToDatabase(guest.getName() + 
+						" purchased something for 10 dollars.");
+			}
+			
+			else{
+				database.addInfoToDatabase(guest.getName() + 
+						" could not afford something for 10 dollars!");
+			}
+		}
+	}
+}

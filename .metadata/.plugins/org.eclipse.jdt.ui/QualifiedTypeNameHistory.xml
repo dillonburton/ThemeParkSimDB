@@ -21,4 +21,7 @@
 <fullyQualifiedTypeName name="android.widget.TableRow"/>
 <fullyQualifiedTypeName name="java.util.List"/>
 <fullyQualifiedTypeName name="javax.swing.table.DefaultTableModel"/>
+<fullyQualifiedTypeName name="com.db.runners.Runner"/>
+<fullyQualifiedTypeName name="com.db.tools.Randomizer"/>
+<fullyQualifiedTypeName name="com.db.tools.DateTimeCalendar"/>
 </qualifiedTypeNameHistroy>

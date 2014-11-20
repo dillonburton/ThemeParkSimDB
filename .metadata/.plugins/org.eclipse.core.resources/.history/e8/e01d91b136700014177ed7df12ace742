@@ -1,0 +1,10 @@
+package com.db.runners;
+
+public class Runner implements Runnable{
+
+	@Override
+	public void run() {
+		
+	}
+
+}

@@ -43,9 +43,10 @@ public class TestFrame extends JFrame {
 	 * @throws SecurityException 
 	 * @throws NoSuchMethodException 
 	 */
-	public TestFrame(Database database, DateTimeCalendar calendar) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public TestFrame(DateTimeCalendar calendar) throws NoSuchMethodException, SecurityException, 
+	IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		this.calendar = calendar;
-		this.database = database;
+		database = new Database();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 942, 541);
@@ -66,6 +67,8 @@ public class TestFrame extends JFrame {
 		
 		JPanel lblNewLabel = new JPanel();
 		
+		/* Start group layout */
+		/* Group layouts are auto generated with eclipse window builder */
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -88,6 +91,7 @@ public class TestFrame extends JFrame {
 				.addComponent(data_panel, GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
 		);
 		change_panel.setLayout(cards);
+		/* End group layout */
 		
 		/* Guest panel *****************************************************/
 		JPanel guest_panel = new JPanel();
@@ -193,6 +197,9 @@ public class TestFrame extends JFrame {
 		database.removeIDFromTable(i, "guests");
 	}
 	
+	/**
+	 * TODO: Simplify
+	 */
 	public void menuPressed(Component comp){
 		if(comp.equals(ib1)){
 			//ib1.setEnabled(false);

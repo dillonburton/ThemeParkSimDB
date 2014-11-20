@@ -1,0 +1,204 @@
+package com.db.tools;
+import java.sql.Date;
+import java.util.Calendar;
+import java.util.HashMap;
+import com.db.comps.TestFrame;
+
+public class DateTimeCalendar extends Thread{
+	
+	// How long (in milliseconds) a minute of time should be
+	public static int lengthOfMinute = 50;
+	
+	// Extra leave chance for guests as the time gets later
+	public static float extraLeaveChance = 0;
+	
+	public static boolean parkClosed = true;
+
+	// Holds the names of the week
+	public HashMap<Integer, String> weekNames;
+	
+	// Holds the month names of a year
+	public HashMap<Integer, String> monthNames;
+	
+	// If the day has changed
+	// TODO: set up use of this variable
+	private boolean dayChange = false;
+	
+	/* Number counters to help with date switching logic */
+	private NumCounter monthCounter, dayOfMonthCounter, 
+	dayOfWeekCounter, hourCounter, minuteCounter;
+
+	// Days in each month
+	private int[] monthDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+	
+	// Current year
+	private int year;
+
+	@Override
+	public void run(){
+		while(true){
+			try {
+				Thread.sleep(lengthOfMinute);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			calcTime();
+
+			// TESTING -----------------------------------------
+			/* Create the string for the day change */
+			// TODO: Use a string builder
+			dayChange = false;
+			String d = monthNames.get(monthCounter.current);
+			d += " " + dayOfMonthCounter.current;
+			d += ", " + year;
+			d += " - " + hourCounter.current;
+			d += ":" + minuteCounter.current;
+			d += ", " + weekNames.get(dayOfWeekCounter.current);
+			// END TESTING --------------------------------------
+			
+			/* If the park isn't closed, at certain times increase the leave chance */
+			if(!parkClosed){
+				
+				/* At 10pm close park */
+				if(hourCounter.current >= 22){
+					System.out.println("THE PARK IS CLOSING DOWN...");
+					parkClosed = true;
+					extraLeaveChance = 100;
+				}
+				
+				/* At 9:45pm get ready to close park */
+				else if(hourCounter.current >= 21 && minuteCounter.current >= 45){
+					extraLeaveChance = 95;
+				}
+				
+				/* At 9:00pm get ready to close park */
+				else if(hourCounter.current >= 21 && minuteCounter.current >= 0){
+					extraLeaveChance = 30;
+				}
+			}
+			
+			/* If the park is closed, check to see if it is open */
+			else{
+				if(hourCounter.current >= 8 && hourCounter.current < 22){
+					parkClosed = false;
+					System.out.println("THE PARK IS OPENING UP!");
+					extraLeaveChance = 0;
+				}
+			}
+		}
+	}
+
+
+
+	public DateTimeCalendar(int year, int month, int dayOfMonth, int hour, int minute, TestFrame testFrame){
+
+		/* Add week names to hash map */
+		weekNames = new HashMap<Integer, String>();
+		weekNames.put(0, "Sunday");
+		weekNames.put(1, "Monday");
+		weekNames.put(2, "Tuesday");
+		weekNames.put(3, "Wednesday");
+		weekNames.put(4, "Thursday");
+		weekNames.put(5, "Friday");
+		weekNames.put(6, "Saturday");
+
+		/* Add month names to hash map */
+		monthNames = new HashMap<Integer, String>();
+		monthNames.put(0, "January");
+		monthNames.put(1, "February");
+		monthNames.put(2, "March");
+		monthNames.put(3, "April");
+		monthNames.put(4, "May");
+		monthNames.put(5, "June");
+		monthNames.put(6, "July");
+		monthNames.put(7, "August");
+		monthNames.put(8, "September");
+		monthNames.put(9, "October");
+		monthNames.put(10, "November");
+		monthNames.put(11, "December");
+
+		this.year = year;
+
+		/* Set up the number counters */
+		monthCounter = new NumCounter(11, 0, month);
+		dayOfMonthCounter = new NumCounter(monthDays[month], 1, dayOfMonth);
+		hourCounter = new NumCounter(23, 0, hour);
+		minuteCounter = new NumCounter(59, 0, minute);
+
+		/* Get day of the week */
+		Calendar c = Calendar.getInstance();
+		Date yourDate = new Date(year, month, dayOfMonth);
+		c.setTime(yourDate);
+		int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+		System.out.println(dayOfWeek);
+
+		dayOfWeekCounter = new NumCounter(6, 0, dayOfWeek);
+	}
+
+	/**
+	 * Check if it's leap year
+	 * (Currently not used)
+	 * @param year is the current year
+	 * @return if it is a leap year
+	 */
+	public boolean getFebLeap(int year){
+		
+		// 1752 was the first leap year
+		if((year - 1752)%4 == 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public DateTime getDateAndTime(){
+		return new DateTime(year, monthCounter.current, dayOfMonthCounter.current, 
+				hourCounter.current, minuteCounter.current);
+	}
+
+
+	public void calcTime(){
+		if(minuteCounter.increase()){
+
+			if(hourCounter.increase()){
+				dayChange = true;
+				dayOfWeekCounter.increase();
+				if(dayOfMonthCounter.increase()){
+
+					if(monthCounter.increase()){
+						dayOfMonthCounter = new 
+								NumCounter(monthDays[0], 1, 1);
+						year++;
+					}else{
+						dayOfMonthCounter = new NumCounter(
+								monthDays[dayOfMonthCounter.
+								          current + 1], 1, 1);
+					}
+				}
+			}
+		}
+	}
+
+	protected class NumCounter{
+
+		private int max, min, current;
+
+		public NumCounter(int max, int min, int start){
+			this.max = max;
+			this.min = min;
+			this.current = start;
+		}
+
+		public boolean increase(){
+			int futureCount = current + 1;
+			if(futureCount > max){
+				current = min;
+				return true;
+			}
+			current = futureCount;
+			return false;
+		}
+	}
+
+}

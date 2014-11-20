@@ -26,7 +26,7 @@ public class TableCreator extends DBHandler{
 	}
 
 	/**
-	 * See super classes (DB.java) abstract declaration method for updateUI
+	 * See super classes (DBHandler.java) abstract declaration method for updateUI
 	 */
 	@Override
 	public void updateUI(String result) {

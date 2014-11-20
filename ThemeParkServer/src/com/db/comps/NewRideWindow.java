@@ -77,6 +77,8 @@ public class NewRideWindow extends JFrame {
 		price_field.setColumns(10);
 		price_field.setBorder(null);
 
+		/* Start group layout */
+		/* Group layouts are auto generated with eclipse window builder */
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 				gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -122,6 +124,7 @@ public class NewRideWindow extends JFrame {
 						.addComponent(button_panel, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
 				);
 		contentPane.setLayout(gl_contentPane);
+		/* End group layout */
 
 		this.setLocationRelativeTo(null);
 	}

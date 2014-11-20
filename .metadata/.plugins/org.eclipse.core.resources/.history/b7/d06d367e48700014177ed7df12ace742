@@ -1,0 +1,77 @@
+package com.db.guest;
+
+import com.db.tools.DateTime;
+import com.db.tools.Randomizer;
+
+public class Guest {
+
+	private int id;
+	private String name;
+	private char sex;
+	private DateTime arrivalDate;
+	private float leaveChance;
+	private float money;
+
+	public Guest(int id, String name, char sex, DateTime arrivalDate, float leaveChance, float money){
+		this.id = id;
+		this.name = name;
+		this.sex = sex;
+		this.arrivalDate = arrivalDate;
+		this.leaveChance = leaveChance;
+		this.money = money;
+	}
+
+	public int getId(){
+		return id;
+	}
+
+	public String getName(){
+		return name;
+	}
+
+	public char getSex(){
+		return sex;
+	}
+
+	public String getArrivalDate(){
+		return arrivalDate.getDateTime();
+	}
+
+	public float getLeaveChance(){
+		return leaveChance;
+	}
+
+	public float getMoney(){
+		return money;
+	}
+	
+	public boolean shouldLeave(){
+		float leaveRand = Randomizer.randomFloat(0, 100, 2);
+		if(leaveRand <= leaveChance){
+			return true;
+		}
+		
+		return false;
+	}
+
+	public void incLeaveChance(float addLeaveChance){
+		
+		if(leaveChance + addLeaveChance >= 100){
+			leaveChance = 100;
+			return;
+		}
+
+		leaveChance += addLeaveChance;
+	}
+
+	public boolean attemptPurchase(float itemCost){
+
+		if(money - itemCost <= 0){
+			leaveChance += 10;
+			return false;
+		}
+
+		money -= itemCost;
+		return true;
+	}
+}
