@@ -8,14 +8,17 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.lang.reflect.InvocationTargetException;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+
 import com.db.database.Database;
 import com.db.tools.DateTimeCalendar;
 
@@ -111,6 +114,7 @@ public class TestFrame extends JFrame {
 		food_panel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		food_panel.setBackground(new Color(219, 112, 147));
 		change_panel.add(food_panel, "food_panel");
+		food_panel.add(new JLabel("Currently under construction. Will be finishing soon."));
 		
 		/* Ride Panel *****************************************************/
 		JPanel ride_panel = new JPanel();
@@ -132,6 +136,7 @@ public class TestFrame extends JFrame {
 		TextButton updateInfo = new TextButton("updateInfo", null, null, this, "Update info");
 		updateInfo.setPreferredSize(new Dimension(150,50));
 		info_panel.add(updateInfo);
+		info_panel.add(new JLabel("Currently under construction. Will be finishing soon."));
 		
 		switch_panel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 3));
 		
@@ -218,18 +223,18 @@ public class TestFrame extends JFrame {
 			System.out.println("2");
 			cards.show(change_panel, "ride_panel");
 		}else if(comp.equals(ib3)){
-			table = database.getTableFromDatabase("food");
-			scrollPane.setViewportView(table);
-			scrollPane.repaint();
-			table.repaint();
-			System.out.println("3");
+//			table = database.getTableFromDatabase("food");
+//			scrollPane.setViewportView(table);
+//			scrollPane.repaint();
+//			table.repaint();
+//			System.out.println("3");
 			cards.show(change_panel, "food_panel");
 		}else{
-			table = database.getTableFromDatabase("info");
-			scrollPane.setViewportView(table);
-			scrollPane.repaint();
-			table.repaint();
-			System.out.println("3");
+//			table = database.getTableFromDatabase("info");
+//			scrollPane.setViewportView(table);
+//			scrollPane.repaint();
+//			table.repaint();
+//			System.out.println("3");
 			cards.show(change_panel, "info_panel");
 		}
 	}

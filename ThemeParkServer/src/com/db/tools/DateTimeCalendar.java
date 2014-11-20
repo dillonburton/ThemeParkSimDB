@@ -2,12 +2,14 @@ package com.db.tools;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.HashMap;
+
 import com.db.comps.TestFrame;
+import com.db.database.Database;
 
 public class DateTimeCalendar extends Thread{
 
 	// How long (in milliseconds) a minute of time should be
-	public static int lengthOfMinute = 50;
+	public static int lengthOfMinute = 20;
 
 	// Extra leave chance for guests as the time gets later
 	public static float extraLeaveChance = 0;
@@ -27,6 +29,8 @@ public class DateTimeCalendar extends Thread{
 	/* Number counters to help with date switching logic */
 	private NumCounter monthCounter, dayOfMonthCounter, 
 	dayOfWeekCounter, hourCounter, minuteCounter;
+	
+	private Database database;
 
 	// Days in each month
 	private int[] monthDays = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -65,6 +69,7 @@ public class DateTimeCalendar extends Thread{
 					System.out.println("THE PARK IS CLOSING DOWN...");
 					parkClosed = true;
 					extraLeaveChance = 100;
+					database.clearTables();
 				}
 
 				/* At 9:45pm get ready to close park */
@@ -92,6 +97,8 @@ public class DateTimeCalendar extends Thread{
 
 
 	public DateTimeCalendar(int year, int month, int dayOfMonth, int hour, int minute, TestFrame testFrame){
+		
+		database = new Database();
 
 		/* Add week names to hash map */
 		weekNames = new HashMap<Integer, String>();

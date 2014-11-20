@@ -38,12 +38,13 @@ public class Database {
 		startDatabase();
 	}
 
-	public void addRideToDatabase(Ride ride){
+	public void addRideToDatabase(Ride ride, DateTimeCalendar calendar){
 		try {
 			/* Add a ride with determined name */
 			statement.executeUpdate("insert into rides (id, name, build_date, "
-					+ "excitement, price) values (NULL, '" + ride.getName() 
-					+ "', '1991-2-2', 12, " + ride.getPrice() + ");");
+					+ "excitment, price) values (NULL, '" + ride.getName() + "', '" + 
+					calendar.getDateAndTime().getDateTime() + "', " + ride.getExcitement() + ", " + ride.getPrice() + ");");
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -64,7 +65,7 @@ public class Database {
 	public void clearTables(){
 		try {
 			statement.executeUpdate("truncate guests;");
-			statement.executeUpdate("truncate rides;");
+			//statement.executeUpdate("truncate rides;");
 			statement.executeUpdate("truncate info;");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -142,7 +143,7 @@ public class Database {
 
 			/* Start the connection */
 			connection = DriverManager.getConnection(
-					"jdbc:mysql://sql4.freesqldatabase.com/sql458061", "sql458061", "sE3%aR5*");
+					"jdbc:mysql://sql4.freesqldatabase.com/sql458835", "sql458835", "gA4*lR9!");
 
 			// Create a statement
 			statement = connection.createStatement();
@@ -228,12 +229,15 @@ public class Database {
 	public void addNamesToDatabase(boolean reAddNames)
 			throws SQLException, IOException{
 		
+		Info.femaleListAmount = 1000;
+		Info.maleListAmount = 1000;
+		
 		if(reAddNames){
 
 			String[] txtNames = {"males.txt", "females.txt"};
 			String[] tableNames = {"male_names", "female_names"};
 
-			for(int index = 0; index < 1; index++){
+			for(int index = 0; index < 2; index++){
 				System.out.println("Adding names to database-------------------");
 
 				// Used throughout function for results
@@ -281,9 +285,6 @@ public class Database {
 
 				System.out.println("Done creating table " + tableNames[index] + ".\n");
 			}
-		}else{
-			Info.femaleListAmount = 1000;
-			Info.maleListAmount = 1000;
 		}
 	}
 }

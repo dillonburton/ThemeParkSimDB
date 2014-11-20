@@ -25,11 +25,12 @@ public class NewRideWindow extends JFrame {
 	private JPanel contentPane;
 	private JTextField name_field;
 	private JLabel lblRidePrice;
-	private JLabel lblRideExcitment;
+	private JLabel eLabel;
 	private JTextField price_field;
-	private JComboBox excitment_box;
 	private Database database;
 	private DateTimeCalendar calendar;
+	private int currentID = 0;
+	private JTextField rideExc;
 
 
 	/**
@@ -60,8 +61,7 @@ public class NewRideWindow extends JFrame {
 		JLabel ride_label = new JLabel("Name");
 
 		lblRidePrice = new JLabel("Price");
-		lblRideExcitment = new JLabel("Excitment");
-		excitment_box = new JComboBox();
+		eLabel = new JLabel("Excitement (0-100%)");
 
 		JPanel button_panel = new JPanel();
 		button_panel.setBackground(new Color(176, 196, 222));
@@ -79,50 +79,43 @@ public class NewRideWindow extends JFrame {
 
 		/* Start group layout */
 		/* Group layouts are auto generated with eclipse window builder */
+		
+		rideExc = new JTextField();
+		rideExc.setColumns(10);
+		rideExc.setBorder(null);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
-				gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPane.createSequentialGroup()
-										.addComponent(name_field, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
-										.addContainerGap())
-										.addGroup(gl_contentPane.createSequentialGroup()
-												.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-														.addComponent(ride_label, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-														.addComponent(lblRideExcitment, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE))
-														.addContainerGap(97, Short.MAX_VALUE))
-														.addGroup(gl_contentPane.createSequentialGroup()
-																.addComponent(lblRidePrice, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
-																.addContainerGap(87, Short.MAX_VALUE))
-																.addGroup(gl_contentPane.createSequentialGroup()
-																		.addComponent(price_field, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
-																		.addContainerGap())
-																		.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
-																				.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-																						.addComponent(excitment_box, Alignment.LEADING, 0, 185, Short.MAX_VALUE)
-																						.addComponent(button_panel, GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
-																						.addContainerGap())))
-				);
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(name_field, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+						.addComponent(ride_label, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblRidePrice, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+						.addComponent(button_panel, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+						.addComponent(price_field, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+						.addComponent(rideExc, GroupLayout.PREFERRED_SIZE, 69, GroupLayout.PREFERRED_SIZE)
+						.addComponent(eLabel, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
+		);
 		gl_contentPane.setVerticalGroup(
-				gl_contentPane.createParallelGroup(Alignment.LEADING)
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-						.addContainerGap()
-						.addComponent(ride_label)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(name_field, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(lblRidePrice)
-						.addGap(2)
-						.addComponent(price_field, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(lblRideExcitment)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(excitment_box, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-						.addGap(18)
-						.addComponent(button_panel, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
-				);
+					.addContainerGap()
+					.addComponent(ride_label)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(name_field, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblRidePrice)
+					.addGap(2)
+					.addComponent(price_field, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(eLabel)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(rideExc, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE)
+					.addGap(19)
+					.addComponent(button_panel, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE))
+		);
 		contentPane.setLayout(gl_contentPane);
 		/* End group layout */
 
@@ -134,13 +127,15 @@ public class NewRideWindow extends JFrame {
 		float price = 0;
 		try{
 			String name = name_field.getText();
+			int e = Integer.parseInt(rideExc.getText());
 			price = Float.parseFloat(price_field.getText());
 			
 			DateTime buildDate = calendar.getDateAndTime();
 
 			// Add ride to database
-			Ride ride = new Ride(0, name, buildDate, 50, price);
-			database.addRideToDatabase(ride);
+			Ride ride = new Ride(currentID, name, buildDate, e, price);
+			currentID++;
+			database.addRideToDatabase(ride, calendar);
 			
 			this.setVisible(false);
 			this.dispose();
