@@ -23,7 +23,7 @@ public class RideTableFragment extends Fragment {
     	
         View rootView = inflater.inflate(R.layout.fragment_test_1, container, false);
         
-        TableCreator dbh = new TableCreator(getActivity(), R.id.table3, "id", "name", "build_date", "excitment", "price");
+        TableCreator dbh = new TableCreator(getActivity(), R.id.table3, "id", "name", "build_date", "excitement", "price");
 		dbh.execute("rides.php");
 		
         return rootView;

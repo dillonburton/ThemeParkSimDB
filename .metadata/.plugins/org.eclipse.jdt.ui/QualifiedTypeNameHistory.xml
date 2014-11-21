@@ -24,4 +24,6 @@
 <fullyQualifiedTypeName name="com.db.runners.Runner"/>
 <fullyQualifiedTypeName name="com.db.tools.Randomizer"/>
 <fullyQualifiedTypeName name="com.db.tools.DateTimeCalendar"/>
+<fullyQualifiedTypeName name="javax.swing.JLabel"/>
+<fullyQualifiedTypeName name="com.db.database.Database"/>
 </qualifiedTypeNameHistroy>
